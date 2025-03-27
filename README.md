@@ -4,6 +4,8 @@
 
 # Minecraft Console Client (MCC)
 
+- Scripts added for Manacube.com
+
 [Documentation](https://mccteam.github.io/) | [Download](#download) | [Installation](https://mccteam.github.io/guide/installation.html) | [Configuration](https://mccteam.github.io/guide/configuration.html) | [Usage](https://mccteam.github.io/guide/usage.html)
 
 </div>

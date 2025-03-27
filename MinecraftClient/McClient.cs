@@ -427,7 +427,8 @@ namespace MinecraftClient
             if (Config.ChatBot.ItemsCollector.Enabled) { BotLoad(new ItemsCollector()); }
             if (Config.ChatBot.WebSocketBot.Enabled) { BotLoad(new WebSocketBot()); }
             //Add your ChatBot here by uncommenting and adapting
-            //BotLoad(new ChatBots.YourBot());
+            //Example: BotLoad(new ChatBots.classname());
+            BotLoad(new ChatBots.Manacube.Kilton());
         }
 
         /// <summary>

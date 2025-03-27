@@ -855,4 +855,19 @@ If the connection to the Minecraft game server is blocked by the firewall, set E
   <data name="Main.Advanced.enable_sentry" xml:space="preserve">
     <value>Set to false to opt-out of Sentry error logging.</value>
   </data>
+  <data name="Main.Manacube.discord_webhook" xml:space="preserve">
+    <value>Enter your discord webhook URL here.</value>
+  </data>
+  <data name="Main.Manacube.discord_ping_target" xml:space="preserve">
+    <value>Who to ping in Discord notifications (everyone, role:&lt;id&gt;, user:&lt;id&gt;, none).</value>
+  </data>
+  <data name="Main.Manacube.enable_kilton_message" xml:space="preserve">
+    <value>Notify Discord when a payment is made to Kilton.</value>
+  </data>
+  <data name="Main.Manacube" xml:space="preserve">
+    <value>These settings affect the Manacube scripts made into the bot</value>
+  </data>
+  <data name="Main.Manacube.kilton_ping_amount" xml:space="preserve">
+    <value>Ping target is included if Kilton balance drops below this threshold.</value>
+  </data>
 </root>

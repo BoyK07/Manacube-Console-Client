@@ -21,6 +21,7 @@ using static MinecraftClient.Settings.HeadCommentHealper;
 using static MinecraftClient.Settings.LoggingConfigHealper;
 using static MinecraftClient.Settings.MainConfigHelper;
 using static MinecraftClient.Settings.MainConfigHelper.MainConfig;
+using static MinecraftClient.Settings.MainConfigHelper.MainConfig.ManacubeConfig;
 using static MinecraftClient.Settings.MainConfigHelper.MainConfig.AdvancedConfig;
 using static MinecraftClient.Settings.MCSettingsConfigHealper;
 using static MinecraftClient.Settings.SignatureConfigHelper;
@@ -43,7 +44,7 @@ namespace MinecraftClient
 
         public static class InternalConfig
         {
-            public static string ServerIP = String.Empty;
+            public static string ServerIP = "manacube.com";
 
             public static ushort ServerPort = 25565;
 
@@ -51,7 +52,7 @@ namespace MinecraftClient
 
             public static string Username = string.Empty;
 
-            public static string MinecraftVersion = string.Empty;
+            public static string MinecraftVersion = "1.21.1";
 
             public static bool InteractiveMode = true;
 
@@ -335,6 +336,9 @@ namespace MinecraftClient
             {
                 public GeneralConfig General = new();
 
+                [TomlPrecedingComment("$Main.Manacube$")]
+                public ManacubeConfig Manacube = new();
+
                 [TomlPrecedingComment("$Main.Advanced$")]
                 public AdvancedConfig Advanced = new();
 
@@ -487,7 +491,7 @@ namespace MinecraftClient
                     public AccountInfoConfig Account = new(string.Empty, string.Empty);
 
                     [TomlInlineComment("$Main.General.login$")]
-                    public ServerInfoConfig Server = new(string.Empty);
+                    public ServerInfoConfig Server = new("manacube.com");
 
                     [TomlInlineComment("$Main.General.server_info$")]
                     public LoginType AccountType = LoginType.microsoft;
@@ -504,10 +508,26 @@ namespace MinecraftClient
                 }
 
                 [TomlDoNotInlineObject]
+                public class ManacubeConfig
+                {
+                    [TomlInlineComment("$Main.Manacube.discord_webhook$")]
+                    public string DiscordWebhook = "";
+
+                    [TomlInlineComment("$Main.Manacube.discord_ping_target$")]
+                    public string DiscordPingTarget = "none";
+
+                    [TomlInlineComment("$Main.Manacube.enable_kilton_message$")]
+                    public bool EnableKiltonMessage = true;
+
+                    [TomlInlineComment("$Main.Manacube.kilton_ping_amount$")]
+                    public int KiltonPingAmount = 50000000;
+                }
+
+                [TomlDoNotInlineObject]
                 public class AdvancedConfig
                 {
                     [TomlInlineComment("$Main.Advanced.enable_sentry$")]
-                    public bool EnableSentry = true;
+                    public bool EnableSentry = false;
                     
                     [TomlInlineComment("$Main.Advanced.language$")]
                     public string Language = "en_us";
@@ -516,7 +536,7 @@ namespace MinecraftClient
                     public bool LoadMccTranslation = true;
 
                     // [TomlInlineComment("$Main.Advanced.console_title$")]
-                    public string ConsoleTitle = "%username%@%serverip% - Minecraft Console Client";
+                    public string ConsoleTitle = "%username%@%serverip% - Manacube Console Client";
 
                     [TomlInlineComment("$Main.Advanced.internal_cmd_char$")]
                     public InternalCmdCharType InternalCmdChar = InternalCmdCharType.slash;
@@ -528,7 +548,7 @@ namespace MinecraftClient
                     public List<string> BotOwners = new() { "Player1", "Player2" };
 
                     [TomlInlineComment("$Main.Advanced.mc_version$")]
-                    public string MinecraftVersion = "auto";
+                    public string MinecraftVersion = "1.21.1";
 
                     [TomlInlineComment("$Main.Advanced.mc_forge$")]
                     public ForgeConfigType EnableForge = ForgeConfigType.no;
@@ -606,7 +626,7 @@ namespace MinecraftClient
                     public bool Timestamps = false;
 
                     [TomlInlineComment("$Main.Advanced.auto_respawn$")]
-                    public bool AutoRespawn = false;
+                    public bool AutoRespawn = true;
 
                     [TomlInlineComment("$Main.Advanced.minecraft_realms$")]
                     public bool MinecraftRealms = false;

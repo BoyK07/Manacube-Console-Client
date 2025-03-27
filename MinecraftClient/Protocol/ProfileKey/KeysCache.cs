@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Timers;
 using static MinecraftClient.Settings;
 using static MinecraftClient.Settings.MainConfigHelper.MainConfig.AdvancedConfig;
@@ -19,7 +18,7 @@ namespace MinecraftClient.Protocol.ProfileKey
         private static readonly Dictionary<string, PlayerKeyPair> keys = new();
         private static readonly Timer updatetimer = new(100);
         private static readonly List<KeyValuePair<string, PlayerKeyPair>> pendingadds = new();
-        private static readonly BinaryFormatter formatter = new();
+        // Removed: private static readonly BinaryFormatter formatter = new();
 
         /// <summary>
         /// Retrieve whether KeysCache contains a keys for the given login.
@@ -112,7 +111,7 @@ namespace MinecraftClient.Protocol.ProfileKey
         /// <returns>True if data is successfully loaded</returns>
         private static bool LoadFromDisk()
         {
-            //User-editable keys cache file in text format
+            // User-editable keys cache file in text format
             if (File.Exists(KeysCacheFilePlaintext))
             {
                 if (Config.Logging.DebugMessages)
@@ -124,7 +123,6 @@ namespace MinecraftClient.Protocol.ProfileKey
                     {
                         if (!line.TrimStart().StartsWith("#"))
                         {
-
                             int separatorIdx = line.IndexOf('=');
                             if (separatorIdx >= 1 && line.Length > separatorIdx + 1)
                             {
@@ -151,7 +149,6 @@ namespace MinecraftClient.Protocol.ProfileKey
                                 {
                                     if (Config.Logging.DebugMessages)
                                         ConsoleIO.WriteLineFormatted(string.Format(Translations.cache_ignore_string_keys, value, e.Message));
-
                                 }
                             }
                             else if (Config.Logging.DebugMessages)

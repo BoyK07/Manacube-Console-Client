@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Timers;
 using static MinecraftClient.Settings;
 using static MinecraftClient.Settings.MainConfigHelper.MainConfig.AdvancedConfig;
+using System.Text.Json; // Added for JSON serialization
 
 namespace MinecraftClient.Protocol.Session
 {
@@ -16,7 +15,7 @@ namespace MinecraftClient.Protocol.Session
     {
         private const string SessionCacheFilePlaintext = "SessionCache.ini";
         private const string SessionCacheFileSerialized = "SessionCache.db";
-        private static readonly string SessionCacheFileMinecraft = String.Concat(
+        private static readonly string SessionCacheFileMinecraft = string.Concat(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             Path.DirectorySeparatorChar,
             ".minecraft",
@@ -28,7 +27,7 @@ namespace MinecraftClient.Protocol.Session
         private static readonly Dictionary<string, SessionToken> sessions = new();
         private static readonly Timer updatetimer = new(100);
         private static readonly List<KeyValuePair<string, SessionToken>> pendingadds = new();
-        private static readonly BinaryFormatter formatter = new();
+        // Removed: private static readonly BinaryFormatter formatter = new();
 
         /// <summary>
         /// Retrieve whether SessionCache contains a session for the given login.
@@ -121,7 +120,7 @@ namespace MinecraftClient.Protocol.Session
         /// <returns>True if data is successfully loaded</returns>
         private static bool LoadFromDisk()
         {
-            //Grab sessions in the Minecraft directory
+            // Grab sessions in the Minecraft directory
             if (File.Exists(SessionCacheFileMinecraft))
             {
                 if (Config.Logging.DebugMessages)
@@ -168,7 +167,7 @@ namespace MinecraftClient.Protocol.Session
                 }
             }
 
-            //Serialized session cache file in binary format
+            // Serialized session cache file in binary format replaced with JSON deserialization
             if (File.Exists(SessionCacheFileSerialized))
             {
                 if (Config.Logging.DebugMessages)
@@ -176,29 +175,29 @@ namespace MinecraftClient.Protocol.Session
 
                 try
                 {
-                    using FileStream fs = new(SessionCacheFileSerialized, FileMode.Open, FileAccess.Read, FileShare.Read);
-#pragma warning disable SYSLIB0011 // BinaryFormatter.Deserialize() is obsolete
-                    // Possible risk of information disclosure or remote code execution. The impact of this vulnerability is limited to the user side only.
-                    Dictionary<string, SessionToken> sessionsTemp = (Dictionary<string, SessionToken>)formatter.Deserialize(fs);
-#pragma warning restore SYSLIB0011 // BinaryFormatter.Deserialize() is obsolete
-                    foreach (KeyValuePair<string, SessionToken> item in sessionsTemp)
+                    string json = File.ReadAllText(SessionCacheFileSerialized);
+                    var sessionsTemp = JsonSerializer.Deserialize<Dictionary<string, SessionToken>>(json);
+                    if (sessionsTemp != null)
                     {
-                        if (Config.Logging.DebugMessages)
-                            ConsoleIO.WriteLineFormatted(string.Format(Translations.cache_loaded, item.Key, item.Value.ID));
-                        sessions[item.Key] = item.Value;
+                        foreach (KeyValuePair<string, SessionToken> item in sessionsTemp)
+                        {
+                            if (Config.Logging.DebugMessages)
+                                ConsoleIO.WriteLineFormatted(string.Format(Translations.cache_loaded, item.Key, item.Value.ID));
+                            sessions[item.Key] = item.Value;
+                        }
                     }
                 }
                 catch (IOException ex)
                 {
                     ConsoleIO.WriteLineFormatted("§8" + string.Format(Translations.cache_read_fail, ex.Message));
                 }
-                catch (SerializationException ex2)
+                catch (Exception ex)
                 {
-                    ConsoleIO.WriteLineFormatted(string.Format(Translations.cache_malformed, ex2.Message));
+                    ConsoleIO.WriteLineFormatted(string.Format(Translations.cache_malformed, ex.Message));
                 }
             }
 
-            //User-editable session cache file in text format
+            // User-editable session cache file in text format
             if (File.Exists(SessionCacheFilePlaintext))
             {
                 if (Config.Logging.DebugMessages)

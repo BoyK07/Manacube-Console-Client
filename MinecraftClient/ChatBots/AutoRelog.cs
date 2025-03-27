@@ -17,7 +17,7 @@ namespace MinecraftClient.ChatBots
             [NonSerialized]
             private const string BotName = "AutoRelog";
 
-            public bool Enabled = false;
+            public bool Enabled = true;
 
             [TomlInlineComment("$ChatBot.AutoRelog.Delay$")]
             public Range Delay = new(3);
@@ -26,7 +26,7 @@ namespace MinecraftClient.ChatBots
             public int Retries = 3;
 
             [TomlInlineComment("$ChatBot.AutoRelog.Ignore_Kick_Message$")]
-            public bool Ignore_Kick_Message = false;
+            public bool Ignore_Kick_Message = true;
 
             [TomlPrecedingComment("$ChatBot.AutoRelog.Kick_Messages$")]
             public string[] Kick_Messages = new string[] { "Connection has been lost", "Server is restarting", "Server is full", "Too Many people" };
