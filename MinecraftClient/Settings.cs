@@ -510,17 +510,20 @@ namespace MinecraftClient
                 [TomlDoNotInlineObject]
                 public class ManacubeConfig
                 {
-                    [TomlInlineComment("$Main.Manacube.discord_webhook$")]
-                    public string DiscordWebhook = "";
-
-                    [TomlInlineComment("$Main.Manacube.discord_ping_target$")]
-                    public string DiscordPingTarget = "none";
+                    [TomlInlineComment("$Main.Manacube.discord_bot_token$")]
+                    public string DiscordBotToken = "";
 
                     [TomlInlineComment("$Main.Manacube.enable_kilton_message$")]
                     public bool EnableKiltonMessage = true;
 
                     [TomlInlineComment("$Main.Manacube.kilton_ping_amount$")]
                     public int KiltonPingAmount = 50000000;
+
+                    [TomlInlineComment("$Main.Manacube.kilton_ping_target$")]
+                    public string KiltonPingTarget = "none";
+
+                    [TomlInlineComment("$Main.Manacube.kilton_message_channel$")]
+                    public string KiltonMessageChannel = "";
                 }
 
                 [TomlDoNotInlineObject]

@@ -848,10 +848,7 @@ Recipes.Slots：合成的物品摆放方式，以从左到右、从上到下的�
   <data name="Main.General.AuthlibServer" xml:space="preserve">
     <value>Yggdrasil API 认证服务器的域名与端口。</value>
   </data>
-  <data name="Main.Manacube.discord_webhook" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Main.Manacube.discord_ping_target" xml:space="preserve">
+  <data name="Main.Manacube.kilton_ping_target" xml:space="preserve">
     <value />
   </data>
   <data name="Main.Manacube.enable_kilton_message" xml:space="preserve">
@@ -861,6 +858,12 @@ Recipes.Slots：合成的物品摆放方式，以从左到右、从上到下的�
     <value />
   </data>
   <data name="Main.Manacube.kilton_ping_amount" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.discord_bot_token" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.kilton_message_channel" xml:space="preserve">
     <value />
   </data>
 </root>

@@ -1786,20 +1786,11 @@ namespace MinecraftClient {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Who to ping in Discord notifications (everyone, role:123456789, user:123456789, none)..
+        ///   Looks up a localized string similar to Enter your Discord bot token here.
         /// </summary>
-        internal static string Main_Manacube_discord_ping_target {
+        internal static string Main_Manacube_discord_bot_token {
             get {
-                return ResourceManager.GetString("Main.Manacube.discord_ping_target", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter your discord webhook URL here..
-        /// </summary>
-        internal static string Main_Manacube_discord_webhook {
-            get {
-                return ResourceManager.GetString("Main.Manacube.discord_webhook", resourceCulture);
+                return ResourceManager.GetString("Main.Manacube.discord_bot_token", resourceCulture);
             }
         }
         
@@ -1813,11 +1804,29 @@ namespace MinecraftClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter the Discord channel id for the Kilton messages.
+        /// </summary>
+        internal static string Main_Manacube_kilton_message_channel {
+            get {
+                return ResourceManager.GetString("Main.Manacube.kilton_message_channel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ping target is included if Kilton balance drops below this threshold..
         /// </summary>
         internal static string Main_Manacube_kilton_ping_amount {
             get {
                 return ResourceManager.GetString("Main.Manacube.kilton_ping_amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who to ping in Discord when amountLeft &lt; KiltonPingAmount (&apos;everyone&apos;, &apos;role:123456789&apos;, &apos;user:123456789&apos;, &apos;none&apos;).
+        /// </summary>
+        internal static string Main_Manacube_kilton_ping_target {
+            get {
+                return ResourceManager.GetString("Main.Manacube.kilton_ping_target", resourceCulture);
             }
         }
         

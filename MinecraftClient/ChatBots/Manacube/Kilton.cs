@@ -17,7 +17,7 @@ namespace MinecraftClient.ChatBots.Manacube
             @"\[KILTON SR\.\] (?<player>.+) contributed \$(?<amount>\d+) towards summoning Kilton Sr\. \$(?<amountLeft>[\d,\.]+) Left \(/warp kiltonsr\)",
             RegexOptions.Compiled);
         
-        // HttpClient for Discord webhook requests
+        // HttpClient for Discord API requests
         private static readonly HttpClient HttpClient = new HttpClient();
         
         // Store Manacube configuration at class level for easy access
@@ -35,8 +35,9 @@ namespace MinecraftClient.ChatBots.Manacube
             
             // Print each property with proper formatting
             LogToConsole($"§3Enable Kilton Message: §f{manacubeConfig.EnableKiltonMessage}");
-            LogToConsole($"§3Discord Webhook: §f{(string.IsNullOrEmpty(manacubeConfig.DiscordWebhook) ? "(not set)" : manacubeConfig.DiscordWebhook)}");
-            LogToConsole($"§3Discord Ping Target: §f{(string.IsNullOrEmpty(manacubeConfig.DiscordPingTarget) ? "(not set)" : manacubeConfig.DiscordPingTarget)}");
+            LogToConsole($"§3Discord Bot Token: §f{(string.IsNullOrEmpty(manacubeConfig.DiscordBotToken) ? "(not set)" : "****" + manacubeConfig.DiscordBotToken.Substring(Math.Max(0, manacubeConfig.DiscordBotToken.Length - 4)))}");
+            LogToConsole($"§3Kilton Discord Channel ID: §f{(string.IsNullOrEmpty(manacubeConfig.KiltonMessageChannel) ? "(not set)" : manacubeConfig.KiltonMessageChannel)}");
+            LogToConsole($"§3Discord Ping Target: §f{(string.IsNullOrEmpty(manacubeConfig.KiltonPingTarget) ? "(not set)" : manacubeConfig.KiltonPingTarget)}");
             LogToConsole($"§3Kilton Ping Amount: §f{manacubeConfig.KiltonPingAmount}");
             
             LogToConsole("§6=============================================");
@@ -61,10 +62,10 @@ namespace MinecraftClient.ChatBots.Manacube
         
         private void ProcessKiltonMessage(Match match, string originalMessage)
         {
-            // Exit early if webhook is not configured
-            if (string.IsNullOrEmpty(manacubeConfig.DiscordWebhook))
+            // Exit early if Bot Token or Channel ID is not configured
+            if (string.IsNullOrEmpty(manacubeConfig.DiscordBotToken) || string.IsNullOrEmpty(manacubeConfig.KiltonMessageChannel))
             {
-                LogToConsole("§eKilton message detected, but Discord webhook is not configured.");
+                LogToConsole("§eKilton message detected, but Discord bot token or channel ID is not configured.");
                 return;
             }
             
@@ -86,15 +87,15 @@ namespace MinecraftClient.ChatBots.Manacube
             // Log the detected message
             LogToConsole($"§6Kilton contribution detected from §e{playerName}§6: §a${contributionAmount}§6, §c${amountLeftStr}§6 left");
             
-            // Send webhook (fire and forget)
-            _ = SendDiscordWebhook(originalMessage, amountLeft);
+            // Send message via Discord bot (fire and forget)
+            _ = SendDiscordBotMessage(originalMessage, amountLeft);
         }
         
-        private async Task SendDiscordWebhook(string message, long amountLeft)
+        private async Task SendDiscordBotMessage(string message, long amountLeft)
         {
             try
             {
-                // Prepare the webhook message
+                // Prepare the Discord message
                 string pingPrefix = "";
                 
                 // Get the ping threshold and convert to a comparable number by removing commas and dots
@@ -107,44 +108,53 @@ namespace MinecraftClient.ChatBots.Manacube
                 
                 // Check if we should ping
                 if (amountLeft <= pingThreshold && 
-                    !string.IsNullOrEmpty(manacubeConfig.DiscordPingTarget) && 
-                    manacubeConfig.DiscordPingTarget.ToLower() != "none")
+                    !string.IsNullOrEmpty(manacubeConfig.KiltonPingTarget) && 
+                    manacubeConfig.KiltonPingTarget.ToLower() != "none")
                 {
                     // Format the ping based on the target type
-                    if (manacubeConfig.DiscordPingTarget.ToLower() == "everyone")
+                    if (manacubeConfig.KiltonPingTarget.ToLower() == "everyone")
                     {
                         pingPrefix = "@everyone ";
                     }
-                    else if (manacubeConfig.DiscordPingTarget.StartsWith("role:"))
+                    else if (manacubeConfig.KiltonPingTarget.StartsWith("role:"))
                     {
-                        string roleId = manacubeConfig.DiscordPingTarget.Substring(5);
+                        string roleId = manacubeConfig.KiltonPingTarget.Substring(5);
                         pingPrefix = $"<@&{roleId}> ";
                     }
-                    else if (manacubeConfig.DiscordPingTarget.StartsWith("user:"))
+                    else if (manacubeConfig.KiltonPingTarget.StartsWith("user:"))
                     {
-                        string userId = manacubeConfig.DiscordPingTarget.Substring(5);
+                        string userId = manacubeConfig.KiltonPingTarget.Substring(5);
                         pingPrefix = $"<@{userId}> ";
                     }
                     else
                     {
                         // Assume it's a direct ping format
-                        pingPrefix = $"{manacubeConfig.DiscordPingTarget} ";
+                        pingPrefix = $"{manacubeConfig.KiltonPingTarget} ";
                     }
                 }
                 
-                // Prepare the webhook payload
+                // Prepare the message payload
                 var payload = new
                 {
                     content = pingPrefix + message,
-                    username = "Manacube Kilton Alert"
                 };
                 
                 // Serialize to JSON
                 string jsonPayload = JsonSerializer.Serialize(payload);
                 
-                // Send the webhook request
-                HttpContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await HttpClient.PostAsync(manacubeConfig.DiscordWebhook, content);
+                // Create request with proper headers
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"https://discord.com/api/v10/channels/{manacubeConfig.KiltonMessageChannel}/messages"),
+                    Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json")
+                };
+                
+                // Add authorization header with bot token
+                request.Headers.Add("Authorization", $"Bot {manacubeConfig.DiscordBotToken}");
+                
+                // Send the request
+                HttpResponseMessage response = await HttpClient.SendAsync(request);
                 
                 // Check the response
                 if (response.IsSuccessStatusCode)
@@ -153,12 +163,12 @@ namespace MinecraftClient.ChatBots.Manacube
                 }
                 else
                 {
-                    LogToConsole($"§cFailed to send Discord webhook: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                    LogToConsole($"§cFailed to send Discord message: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
                 }
             }
             catch (Exception ex)
             {
-                LogToConsole($"§cError sending Discord webhook: {ex.Message}");
+                LogToConsole($"§cError sending Discord message: {ex.Message}");
             }
         }
     }
