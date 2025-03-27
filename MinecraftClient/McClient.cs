@@ -428,7 +428,8 @@ namespace MinecraftClient
             if (Config.ChatBot.WebSocketBot.Enabled) { BotLoad(new WebSocketBot()); }
             
             // Manacube Bot scripts.
-            if (Config.Main.Manacube.EnableKiltonMessage) { BotLoad(new ChatBots.Manacube.Kilton()); }
+            if (Config.Main.Manacube.Kilton.EnableKiltonMessage) { BotLoad(new ChatBots.Manacube.Kilton()); }
+            if (Config.Main.Manacube.MagicPond.EnableMagicPondMessage) { BotLoad(new ChatBots.Manacube.MagicPond()); }
         }
 
         /// <summary>

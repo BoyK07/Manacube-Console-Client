@@ -1804,6 +1804,24 @@ namespace MinecraftClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Notify Discord when a Magic Pond event is about to happen.
+        /// </summary>
+        internal static string Main_Manacube_enable_magicpond_message {
+            get {
+                return ResourceManager.GetString("Main.Manacube.enable_magicpond_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These settings affect the Manacube Kilton script.
+        /// </summary>
+        internal static string Main_Manacube_Kilton {
+            get {
+                return ResourceManager.GetString("Main.Manacube.Kilton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter the Discord channel id for the Kilton messages.
         /// </summary>
         internal static string Main_Manacube_kilton_message_channel {
@@ -1827,6 +1845,42 @@ namespace MinecraftClient {
         internal static string Main_Manacube_kilton_ping_target {
             get {
                 return ResourceManager.GetString("Main.Manacube.kilton_ping_target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These settings affect the Manacube Magic Pond script.
+        /// </summary>
+        internal static string Main_Manacube_MagicPond {
+            get {
+                return ResourceManager.GetString("Main.Manacube.MagicPond", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the Discord channel id for the Magic Pond messages.
+        /// </summary>
+        internal static string Main_Manacube_magicpond_message_channel {
+            get {
+                return ResourceManager.GetString("Main.Manacube.magicpond_message_channel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who to ping in Discord after TimeBeforeNotifying (&apos;everyone&apos;, &apos;role:123456789&apos;, &apos;user:123456789&apos;, &apos;none&apos;).
+        /// </summary>
+        internal static string Main_Manacube_magicpond_ping_target {
+            get {
+                return ResourceManager.GetString("Main.Manacube.magicpond_ping_target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delay (in minutes) before sending message to Discord.
+        /// </summary>
+        internal static string Main_Manacube_magicpond_time_before_notifying {
+            get {
+                return ResourceManager.GetString("Main.Manacube.magicpond_time_before_notifying", resourceCulture);
             }
         }
         

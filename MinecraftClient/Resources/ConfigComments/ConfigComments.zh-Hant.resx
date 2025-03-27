@@ -869,4 +869,22 @@ https://github.com/milutinke/MCC.js.git\n# 協議規範將很快在文檔中提�
   <data name="Main.Manacube.kilton_message_channel" xml:space="preserve">
     <value />
   </data>
+  <data name="Main.Manacube.enable_magicpond_message" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.magicpond_time_before_notifying" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.magicpond_ping_target" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.magicpond_message_channel" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.Kilton" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Main.Manacube.MagicPond" xml:space="preserve">
+    <value />
+  </data>
 </root>

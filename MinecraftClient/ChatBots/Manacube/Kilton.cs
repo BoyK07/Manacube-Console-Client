@@ -22,31 +22,17 @@ namespace MinecraftClient.ChatBots.Manacube
         
         // Store Manacube configuration at class level for easy access
         private readonly Settings.MainConfigHelper.MainConfig.ManacubeConfig manacubeConfig = Settings.Config.Main.Manacube;
+        private readonly Settings.MainConfigHelper.MainConfig.ManacubeConfig.KiltonConfig kiltonConfig = Settings.Config.Main.Manacube.Kilton;
 
         public override void Initialize()
         {
-            // Print all Manacube-related configuration settings
-            PrintManacubeConfig();
-        }
-
-        private void PrintManacubeConfig()
-        {
-            LogToConsole("§6======= Manacube Configuration Settings =======");
-            
-            // Print each property with proper formatting
-            LogToConsole($"§3Enable Kilton Message: §f{manacubeConfig.EnableKiltonMessage}");
-            LogToConsole($"§3Discord Bot Token: §f{(string.IsNullOrEmpty(manacubeConfig.DiscordBotToken) ? "(not set)" : "****" + manacubeConfig.DiscordBotToken.Substring(Math.Max(0, manacubeConfig.DiscordBotToken.Length - 4)))}");
-            LogToConsole($"§3Kilton Discord Channel ID: §f{(string.IsNullOrEmpty(manacubeConfig.KiltonMessageChannel) ? "(not set)" : manacubeConfig.KiltonMessageChannel)}");
-            LogToConsole($"§3Discord Ping Target: §f{(string.IsNullOrEmpty(manacubeConfig.KiltonPingTarget) ? "(not set)" : manacubeConfig.KiltonPingTarget)}");
-            LogToConsole($"§3Kilton Ping Amount: §f{manacubeConfig.KiltonPingAmount}");
-            
-            LogToConsole("§6=============================================");
+            // ...
         }
         
         public override void GetText(string text, string json)
         {
             // Only process if Kilton messages are enabled
-            if (!manacubeConfig.EnableKiltonMessage)
+            if (!kiltonConfig.EnableKiltonMessage)
                 return;
                 
             // Strip color codes and other formatting for better matching
@@ -63,7 +49,7 @@ namespace MinecraftClient.ChatBots.Manacube
         private void ProcessKiltonMessage(Match match, string originalMessage)
         {
             // Exit early if Bot Token or Channel ID is not configured
-            if (string.IsNullOrEmpty(manacubeConfig.DiscordBotToken) || string.IsNullOrEmpty(manacubeConfig.KiltonMessageChannel))
+            if (string.IsNullOrEmpty(manacubeConfig.DiscordBotToken) || string.IsNullOrEmpty(kiltonConfig.KiltonMessageChannel))
             {
                 LogToConsole("§eKilton message detected, but Discord bot token or channel ID is not configured.");
                 return;
@@ -99,37 +85,37 @@ namespace MinecraftClient.ChatBots.Manacube
                 string pingPrefix = "";
                 
                 // Get the ping threshold and convert to a comparable number by removing commas and dots
-                string strippedPingAmount = manacubeConfig.KiltonPingAmount.ToString().Replace(",", "").Replace(".", "");
+                string strippedPingAmount = kiltonConfig.KiltonPingAmount.ToString().Replace(",", "").Replace(".", "");
                 if (!long.TryParse(strippedPingAmount, out long pingThreshold))
                 {
-                    LogToConsole($"§cError: Could not parse KiltonPingAmount as a number: {manacubeConfig.KiltonPingAmount}");
+                    LogToConsole($"§cError: Could not parse KiltonPingAmount as a number: {kiltonConfig.KiltonPingAmount}");
                     pingThreshold = long.MaxValue; // Default to a high value to avoid pinging
                 }
                 
                 // Check if we should ping
                 if (amountLeft <= pingThreshold && 
-                    !string.IsNullOrEmpty(manacubeConfig.KiltonPingTarget) && 
-                    manacubeConfig.KiltonPingTarget.ToLower() != "none")
+                    !string.IsNullOrEmpty(kiltonConfig.KiltonPingTarget) && 
+                    kiltonConfig.KiltonPingTarget.ToLower() != "none")
                 {
                     // Format the ping based on the target type
-                    if (manacubeConfig.KiltonPingTarget.ToLower() == "everyone")
+                    if (kiltonConfig.KiltonPingTarget.ToLower() == "everyone")
                     {
                         pingPrefix = "@everyone ";
                     }
-                    else if (manacubeConfig.KiltonPingTarget.StartsWith("role:"))
+                    else if (kiltonConfig.KiltonPingTarget.StartsWith("role:"))
                     {
-                        string roleId = manacubeConfig.KiltonPingTarget.Substring(5);
+                        string roleId = kiltonConfig.KiltonPingTarget.Substring(5);
                         pingPrefix = $"<@&{roleId}> ";
                     }
-                    else if (manacubeConfig.KiltonPingTarget.StartsWith("user:"))
+                    else if (kiltonConfig.KiltonPingTarget.StartsWith("user:"))
                     {
-                        string userId = manacubeConfig.KiltonPingTarget.Substring(5);
+                        string userId = kiltonConfig.KiltonPingTarget.Substring(5);
                         pingPrefix = $"<@{userId}> ";
                     }
                     else
                     {
                         // Assume it's a direct ping format
-                        pingPrefix = $"{manacubeConfig.KiltonPingTarget} ";
+                        pingPrefix = $"{kiltonConfig.KiltonPingTarget} ";
                     }
                 }
                 
@@ -146,7 +132,7 @@ namespace MinecraftClient.ChatBots.Manacube
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"https://discord.com/api/v10/channels/{manacubeConfig.KiltonMessageChannel}/messages"),
+                    RequestUri = new Uri($"https://discord.com/api/v10/channels/{kiltonConfig.KiltonMessageChannel}/messages"),
                     Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json")
                 };
                 

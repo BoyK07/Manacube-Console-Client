@@ -873,4 +873,22 @@ If the connection to the Minecraft game server is blocked by the firewall, set E
   <data name="Main.Manacube.kilton_message_channel" xml:space="preserve">
     <value>Enter the Discord channel id for the Kilton messages</value>
   </data>
+  <data name="Main.Manacube.enable_magicpond_message" xml:space="preserve">
+    <value>Notify Discord when a Magic Pond event is about to happen</value>
+  </data>
+  <data name="Main.Manacube.magicpond_time_before_notifying" xml:space="preserve">
+    <value>Delay (in minutes) before sending message to Discord</value>
+  </data>
+  <data name="Main.Manacube.magicpond_ping_target" xml:space="preserve">
+    <value>Who to ping in Discord after TimeBeforeNotifying ('everyone', 'role:123456789', 'user:123456789', 'none')</value>
+  </data>
+  <data name="Main.Manacube.magicpond_message_channel" xml:space="preserve">
+    <value>Enter the Discord channel id for the Magic Pond messages</value>
+  </data>
+  <data name="Main.Manacube.Kilton" xml:space="preserve">
+    <value>These settings affect the Manacube Kilton script</value>
+  </data>
+  <data name="Main.Manacube.MagicPond" xml:space="preserve">
+    <value>These settings affect the Manacube Magic Pond script</value>
+  </data>
 </root>

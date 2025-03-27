@@ -506,24 +506,49 @@ namespace MinecraftClient
 
                     public enum LoginMethod { mcc, browser };
                 }
-
                 [TomlDoNotInlineObject]
                 public class ManacubeConfig
                 {
                     [TomlInlineComment("$Main.Manacube.discord_bot_token$")]
                     public string DiscordBotToken = "";
 
-                    [TomlInlineComment("$Main.Manacube.enable_kilton_message$")]
-                    public bool EnableKiltonMessage = true;
+                    [TomlPrecedingComment("$Main.Manacube.Kilton$")]
+                    public KiltonConfig Kilton = new();
 
-                    [TomlInlineComment("$Main.Manacube.kilton_ping_amount$")]
-                    public int KiltonPingAmount = 50000000;
+                    [TomlPrecedingComment("$Main.Manacube.MagicPond$")]
+                    public MagicPondConfig MagicPond = new();
 
-                    [TomlInlineComment("$Main.Manacube.kilton_ping_target$")]
-                    public string KiltonPingTarget = "none";
+                    [TomlDoNotInlineObject]
+                    public class KiltonConfig
+                    {
+                        [TomlInlineComment("$Main.Manacube.enable_kilton_message$")]
+                        public bool EnableKiltonMessage = true;
 
-                    [TomlInlineComment("$Main.Manacube.kilton_message_channel$")]
-                    public string KiltonMessageChannel = "";
+                        [TomlInlineComment("$Main.Manacube.kilton_ping_amount$")]
+                        public int KiltonPingAmount = 50000000;
+
+                        [TomlInlineComment("$Main.Manacube.kilton_ping_target$")]
+                        public string KiltonPingTarget = "none";
+
+                        [TomlInlineComment("$Main.Manacube.kilton_message_channel$")]
+                        public string KiltonMessageChannel = "";
+                    }
+
+                    [TomlDoNotInlineObject]
+                    public class MagicPondConfig
+                    {
+                        [TomlInlineComment("$Main.Manacube.enable_magicpond_message$")]
+                        public bool EnableMagicPondMessage = true;
+
+                        [TomlInlineComment("$Main.Manacube.magicpond_time_before_notifying$")]
+                        public int MagicPondTimeBeforeNotifying = 5;
+
+                        [TomlInlineComment("$Main.Manacube.magicpond_ping_target$")]
+                        public string MagicPondPingTarget = "none";
+
+                        [TomlInlineComment("$Main.Manacube.magicpond_message_channel$")]
+                        public string MagicPondMessageChannel = "";
+                    }
                 }
 
                 [TomlDoNotInlineObject]
