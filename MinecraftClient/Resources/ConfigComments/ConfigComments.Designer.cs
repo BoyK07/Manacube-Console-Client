@@ -1786,7 +1786,7 @@ namespace MinecraftClient {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Who to ping in Discord notifications (everyone, role:&lt;id&gt;, user:&lt;id&gt;, none)..
+        ///   Looks up a localized string similar to Who to ping in Discord notifications (everyone, role:123456789, user:123456789, none)..
         /// </summary>
         internal static string Main_Manacube_discord_ping_target {
             get {

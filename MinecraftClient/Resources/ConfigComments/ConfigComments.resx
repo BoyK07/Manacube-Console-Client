@@ -859,7 +859,7 @@ If the connection to the Minecraft game server is blocked by the firewall, set E
     <value>Enter your discord webhook URL here.</value>
   </data>
   <data name="Main.Manacube.discord_ping_target" xml:space="preserve">
-    <value>Who to ping in Discord notifications (everyone, role:&lt;id&gt;, user:&lt;id&gt;, none).</value>
+    <value>Who to ping in Discord notifications (everyone, role:123456789, user:123456789, none).</value>
   </data>
   <data name="Main.Manacube.enable_kilton_message" xml:space="preserve">
     <value>Notify Discord when a payment is made to Kilton.</value>
