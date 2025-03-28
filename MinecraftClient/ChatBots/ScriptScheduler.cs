@@ -20,24 +20,16 @@ namespace MinecraftClient.ChatBots
             [NonSerialized]
             private const string BotName = "ScriptScheduler";
 
-            public bool Enabled = false;
+            public bool Enabled = true;
 
             public TaskConfig[] TaskList = new TaskConfig[] {
                 new TaskConfig(
-                    Task_Name: "Task Name 1",
-                    Trigger_On_First_Login: false,
-                    Trigger_On_Login: false,
-                    Trigger_On_Times: new(true, new TimeSpan[] { new(14, 00, 00) }),
-                    Trigger_On_Interval: new(true, 3.6, 4.8),
-                    Action: "send /hello"
-                ),
-                new TaskConfig(
-                    Task_Name: "Task Name 2",
-                    Trigger_On_First_Login: false,
+                    Task_Name: "Join Skyblock",
+                    Trigger_On_First_Login: true,
                     Trigger_On_Login: true,
-                    Trigger_On_Times: new(false, Array.Empty<TimeSpan>() ),
-                    Trigger_On_Interval: new(false, 1, 10),
-                    Action: "send /login pass"
+                    Trigger_On_Times: new(false, new TimeSpan[] { new(14, 00, 00) }),
+                    Trigger_On_Interval: new(true, 30, 30),
+                    Action: "send /server skyblock-islands-1"
                 ),
             };
 

@@ -20,10 +20,10 @@ namespace MinecraftClient.ChatBots
             public bool Enabled = true;
 
             [TomlInlineComment("$ChatBot.AutoRelog.Delay$")]
-            public Range Delay = new(3);
+            public Range Delay = new(10);
 
             [TomlInlineComment("$ChatBot.AutoRelog.Retries$")]
-            public int Retries = 3;
+            public int Retries = -1;
 
             [TomlInlineComment("$ChatBot.AutoRelog.Ignore_Kick_Message$")]
             public bool Ignore_Kick_Message = true;
