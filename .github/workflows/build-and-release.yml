@@ -63,11 +63,6 @@ jobs:
           name: MinecraftClient-linux-x64
           path: release-assets/linux
 
-      - name: Zip artifacts
-        run: |
-          cd release-assets/windows && zip -r ../../MinecraftClient-Windows.zip . && cd ../..
-          cd release-assets/linux && zip -r ../../MinecraftClient-Linux.zip . && cd ../..
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -77,5 +72,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            MinecraftClient-Windows.zip
-            MinecraftClient-Linux.zip
+            release-assets/windows/MinecraftClient
+            release-assets/windows/MinecraftClient.exe
+            release-assets/linux/MinecraftClient
+
