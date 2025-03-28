@@ -1,154 +1,74 @@
-name: Build MCC and Documents
+name: Build & Release Manacube Console Client
 
 on:
   push:
     branches:
       - master
   workflow_dispatch:
-  
+
 env:
-  PROJECT: "MinecraftClient"
-  target-version: "net7.0"
+  PROJECT: "ManacubeConsoleClient"
+  target-version: "net8.0"
   compile-flags: "--self-contained=true -c Release -p:UseAppHost=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=Embedded"
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.fetch-translations.result != 'failure' }}
-    needs: [determine-build, fetch-translations]
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       matrix:
-        target: [win-x86, win-x64, win-arm, win-arm64, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64]
+        target: [win-x64, linux-x64]  # Adjust targets as needed
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      if: ${{ always() && needs.fetch-translations.result == 'skipped' }}
-      with:
-        fetch-depth: 0
-        submodules: 'true'
-        
-    - name: Get Current Date
-      run: |
-        echo date=$(date +'%Y%m%d') >> $GITHUB_ENV
-        echo date_dashed=$(date -u +'%Y-%m-%d') >> $GITHUB_ENV
-        
-    - name: Restore Translations (if available)
-      uses: actions/cache/restore@v3
-      with:
-        path: ${{ github.workspace }}/*
-        key: "translation-${{ github.sha }}"
-        restore-keys: "translation-"
-          
-    - name: Setup Environment Variables (early)
-      run: |
-        echo project-path=${{ github.workspace }}/${{ env.PROJECT }} >> $GITHUB_ENV
-        echo file-ext=${{ (startsWith(matrix.target, 'win') && '.exe') || ' ' }} >> $GITHUB_ENV
-        
-    - name: Setup Environment Variables
-      run: |
-        echo target-out-path=${{ env.project-path }}/bin/Release/${{ env.target-version }}/${{ matrix.target }}/publish/ >> $GITHUB_ENV
-        echo assembly-info=${{ env.project-path }}/Properties/AssemblyInfo.cs >> $GITHUB_ENV
-        echo build-version-info=${{ env.date }}-${{ github.run_number }} >> $GITHUB_ENV
-        echo commit=$(echo ${{ github.sha }} | cut -c 1-7) >> $GITHUB_ENV
-        
-    - name: Setup Environment Variables (late)
-      run: |
-        echo built-executable-path=${{ env.target-out-path }}${{ env.PROJECT }}${{ env.file-ext }} >> $GITHUB_ENV
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'true'
 
-    - name: Set Version Info
-      run: |
-        echo '' >> ${{ env.assembly-info }}
-        echo "[assembly: AssemblyConfiguration(\"GitHub build ${{ github.run_number }}, built on ${{ env.date_dashed }} from commit ${{ env.commit }}\")]" >> ${{ env.assembly-info }}
-        sed -i -e 's|SentryDSN = "";|SentryDSN = "${{ secrets.SENTRY_DSN }}";|g' ${{ env.project-path }}/Program.cs
+      - name: Set build date and variables
+        run: |
+          echo "date=$(date +'%Y%m%d')" >> $GITHUB_ENV
+          echo "date_dashed=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "project-path=${{ github.workspace }}/${{ env.PROJECT }}" >> $GITHUB_ENV
+          echo "file-ext=${{ (startsWith(matrix.target, 'win') && '.exe') || '' }}" >> $GITHUB_ENV
 
-    - name: Build Target
-      run: dotnet publish ${{ env.project-path }}.sln -f ${{ env.target-version }} -r ${{ matrix.target }} ${{ env.compile-flags }}
-      env:
-        DOTNET_NOLOGO: true
+      - name: Define paths and version
+        run: |
+          echo "target-out-path=${{ env.project-path }}/bin/Release/${{ env.target-version }}/${{ matrix.target }}/publish/" >> $GITHUB_ENV
+          echo "assembly-info=${{ env.project-path }}/Properties/AssemblyInfo.cs" >> $GITHUB_ENV
+          echo "build-version-info=${{ env.date }}-${{ github.run_number }}" >> $GITHUB_ENV
+          echo "commit=$(echo ${{ github.sha }} | cut -c 1-7)" >> $GITHUB_ENV
+          echo "built-executable-path=${{ env.target-out-path }}${{ env.PROJECT }}${{ env.file-ext }}" >> $GITHUB_ENV
 
-    - name: Rename Binary
-      run: |
-        mv ${{ env.built-executable-path }} ${{ env.PROJECT }}-${{ env.build-version-info }}-${{ matrix.target }}${{ (startsWith(matrix.target, 'win') && '.exe') || ' ' }}
+      - name: Set Assembly Version Information
+        run: |
+          echo "" >> ${{ env.assembly-info }}
+          echo "[assembly: AssemblyConfiguration(\"GitHub build ${{ github.run_number }}, built on ${{ env.date_dashed }} from commit ${{ env.commit }}\")]" >> ${{ env.assembly-info }}
 
-    - name: Wait
-      # We wait before creating a release because we might run into a race condition
-      # while creating a new tag (as opposed to using the existing tag, if any) since we're running builds in parallel.
-      run: |
-        sleep 5s
-    
-    - name: Create Release
-      uses: ncipollo/release-action@v1.14.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ${{ env.PROJECT }}-${{ env.build-version-info }}-${{ matrix.target }}${{ (startsWith(matrix.target, 'win') && '.exe') || ' ' }}
-        tag: ${{ format('{0}-{1}', env.date, github.run_number) }}
-        name: '${{ env.build-version-info }}: ${{ github.event.head_commit.message }}'
-        generateReleaseNotes: true
-        artifactErrorsFailBuild: true
-        allowUpdates: true
-        makeLatest: true
-        omitBodyDuringUpdate: true
-        omitNameDuringUpdate: true
-        replacesArtifacts: false
-    
-  fetch-translations:
-    strategy:
-      fail-fast: true
-    runs-on: ubuntu-latest
-    needs: determine-build
-    # Translations will only be fetched in the MCCTeam repository, since it needs crowdin secrets.
-    if: ${{ github.repository == 'MCCTeam/Minecraft-Console-Client' }}
-    timeout-minutes: 15
-  
-    steps:   
-    - name: Check cache
-      uses: actions/cache/restore@v3
-      id: cache-check
-      with:
-        path: ${{ github.workspace }}/*
-        key: "translation-${{ github.sha }}"
-        lookup-only: true
-        restore-keys: "translation-"
-  
-    - name: Checkout
-      uses: actions/checkout@v3
-      if: steps.cache-check.outputs.cache-hit != 'true'
-      with:
-        fetch-depth: 0
-        submodules: 'true'
+      - name: Build the executable
+        run: dotnet publish "${{ env.project-path }}.sln" -f "${{ env.target-version }}" -r "${{ matrix.target }}" ${{ env.compile-flags }}
+        env:
+          DOTNET_NOLOGO: true
 
-    - name: Download translations from crowdin
-      uses: crowdin/github-action@v1.6.0
-      if: steps.cache-check.outputs.cache-hit != 'true'
-      with:
-        upload_sources: false
-        upload_translations: false
-        download_translations: true
+      - name: Rename built executable
+        run: |
+          mv "${{ env.built-executable-path }}" "${{ env.PROJECT }}-${{ env.build-version-info }}-${{ matrix.target }}${{ env.file-ext }}"
 
-        localization_branch_name: l10n_master
-        create_pull_request: false 
-        push_translations: false
+      - name: Wait briefly to prevent race conditions
+        run: sleep 5s
 
-        base_path: ${{ github.workspace }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-        CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
-      
-    - name: Save cache
-      uses: actions/cache/save@v3
-      if: steps.cache-check.outputs.cache-hit != 'true'
-      with:
-        path:  ${{ github.workspace }}/*
-        key: "translation-${{ github.sha }}"
-      
-  determine-build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    if: ${{ !contains(github.event.head_commit.message, 'skip') || !contains(github.event.head_commit.message, 'skipci')}}
-    steps:
-      - name: dummy action
-        run: "echo 'dummy action that checks if the build is to be skipped, if it is, this action does not run to break the entire build action'"        
+      - name: Create or update release with artifacts
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "${{ env.PROJECT }}-${{ env.build-version-info }}-${{ matrix.target }}${{ env.file-ext }}"
+          tag: "${{ env.build-version-info }}"
+          name: "${{ env.build-version-info }}: ${{ github.event.head_commit.message }}"
+          generateReleaseNotes: true
+          artifactErrorsFailBuild: true
+          allowUpdates: true
+          makeLatest: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          replacesArtifacts: false
