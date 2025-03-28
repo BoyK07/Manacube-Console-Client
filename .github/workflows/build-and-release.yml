@@ -27,7 +27,7 @@ jobs:
       - name: Restore project dependencies
         run: dotnet restore MinecraftClient/MinecraftClient.csproj
 
-      - name: Build project (Release configuration)
+      - name: Build project (Release)
         run: dotnet build MinecraftClient/MinecraftClient.csproj -c Release --no-restore
 
       - name: Publish single-file executable
@@ -40,11 +40,19 @@ jobs:
             --no-restore \
             -o publish/${{ matrix.target }}
 
-      - name: Upload executable as artifact
+      - name: Rename executable for platform
+        run: |
+          if [[ "${{ matrix.target }}" == "win-x64" ]]; then
+            mv publish/${{ matrix.target }}/MinecraftClient.exe MinecraftClient-win-x64.exe
+          else
+            mv publish/${{ matrix.target }}/MinecraftClient MinecraftClient-linux-x64
+          fi
+
+      - name: Upload built artifact
         uses: actions/upload-artifact@v4
         with:
           name: MinecraftClient-${{ matrix.target }}
-          path: publish/${{ matrix.target }}
+          path: MinecraftClient-*
 
   create-release:
     needs: build-release
@@ -55,13 +63,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: MinecraftClient-win-x64
-          path: release-assets/windows
+          path: release-assets
 
       - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
           name: MinecraftClient-linux-x64
-          path: release-assets/linux
+          path: release-assets
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -72,7 +80,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            release-assets/windows/MinecraftClient
-            release-assets/windows/MinecraftClient.exe
-            release-assets/linux/MinecraftClient
-
+            release-assets/MinecraftClient-win-x64.exe
+            release-assets/MinecraftClient-linux-x64
