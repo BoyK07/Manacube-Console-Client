@@ -24,8 +24,8 @@ namespace MinecraftClient.ChatBots.Manacube
             else
             {
                 targetPlayer = _targetPlayer;
-                // Start the background task for periodic mana checks
-                Task.Run(CheckManaRoutine);
+                // Start the background task for periodic mana checks after a delay to connect to the gamemode
+                Task.Delay(20000).ContinueWith(_ => CheckManaRoutine());
             }
         }
 
