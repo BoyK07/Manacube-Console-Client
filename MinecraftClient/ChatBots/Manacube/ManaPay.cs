@@ -2,6 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MinecraftClient.Scripting;
+using System.Linq;
 
 namespace MinecraftClient.ChatBots.Manacube
 {
@@ -25,7 +26,7 @@ namespace MinecraftClient.ChatBots.Manacube
             {
                 targetPlayer = _targetPlayer;
                 // Start the background task for periodic mana checks after a delay to connect to the gamemode
-                Task.Delay(20000).ContinueWith(_ => CheckManaRoutine());
+                Task.Delay(10000).ContinueWith(_ => CheckManaRoutine());
             }
         }
 
@@ -33,33 +34,36 @@ namespace MinecraftClient.ChatBots.Manacube
         {
             while (true)
             {
-                // If 2 or more hours have passed, send the /stats command
-                if ((DateTime.Now - lastStatsCheck).TotalHours >= 2)
+                // If 6 or more hours have passed, send the /stats command
+                if ((DateTime.Now - lastStatsCheck).TotalHours >= 6)
                 {
                     SendText("/stats");
                     lastStatsCheck = DateTime.Now;
                     // Wait a bit for the server's response
-                    await Task.Delay(5000);
+                    await Task.Delay(2000);
                 }
-                // Wait 2 hours between checks
-                await Task.Delay(TimeSpan.FromHours(2));
+                // Wait 6 hours between checks
+                await Task.Delay(TimeSpan.FromHours(6));
             }
         }
 
         public override void GetText(string text, string json)
         {
+            // Strip Minecraft formatting codes (e.g. §r, §b, etc.)
+            text = Regex.Replace(text, @"\u00A7.", "");
+
             if (text.Contains("Mana:"))
             {
-                // Parse mana value from the message using regex
-                var match = Regex.Match(text, @"Mana:\s*([\d,]+)");
-                if (match.Success)
+                int idx = text.IndexOf("Mana:") + "Mana:".Length;
+                string after = text.Substring(idx).Trim();
+
+                string rawValue = new string(after.TakeWhile(c => char.IsDigit(c) || c == ',').ToArray());
+
+                string cleaned = rawValue.Replace(",", "");
+                if (int.TryParse(cleaned, out manaToSend) && manaToSend >= 1000)
                 {
-                    string manaStr = match.Groups[1].Value.Replace(",", "");
-                    if (int.TryParse(manaStr, out manaToSend) && manaToSend >= 1000)
-                    {
-                        LogToConsole($"Detected {manaToSend} mana — sending to {targetPlayer}");
-                        SendText($"/mana pay {targetPlayer} {manaToSend}");
-                    }
+                    LogToConsole($"Detected {manaToSend} mana — sending to {targetPlayer}");
+                    SendText($"/mana pay {targetPlayer} {manaToSend}");
                 }
             }
         }
