@@ -891,4 +891,19 @@ If the connection to the Minecraft game server is blocked by the firewall, set E
   <data name="Main.Manacube.MagicPond" xml:space="preserve">
     <value>These settings affect the Manacube Magic Pond script</value>
   </data>
+  <data name="Main.Manacube.enable_manapay" xml:space="preserve">
+    <value>Automatically send mana to the target</value>
+  </data>
+  <data name="Main.Manacube.ManaPay" xml:space="preserve">
+    <value>These settings affect the Manacube ManaPay script</value>
+  </data>
+  <data name="Main.Manacube.manapay_delay" xml:space="preserve">
+    <value>Delay before checking for sufficient mana to send</value>
+  </data>
+  <data name="Main.Manacube.manapay_min_mana" xml:space="preserve">
+    <value>Minimum mana required to trigger a transfer</value>
+  </data>
+  <data name="Main.Manacube.manapay_target" xml:space="preserve">
+    <value>The target player to whom the mana should be sent</value>
+  </data>
 </root>

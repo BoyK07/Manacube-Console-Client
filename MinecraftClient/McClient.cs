@@ -430,6 +430,7 @@ namespace MinecraftClient
             // Manacube Bot scripts.
             if (Config.Main.Manacube.Kilton.EnableKiltonMessage) { BotLoad(new ChatBots.Manacube.Kilton()); }
             if (Config.Main.Manacube.MagicPond.EnableMagicPondMessage) { BotLoad(new ChatBots.Manacube.MagicPond()); }
+            if (Config.Main.Manacube.ManaPay.EnableManaPay) { BotLoad(new ChatBots.Manacube.ManaPay()); }
         }
 
         /// <summary>

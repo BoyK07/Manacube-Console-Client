@@ -26,7 +26,7 @@ namespace MinecraftClient.ChatBots.Manacube
 
         public override void Initialize()
         {
-            // ...
+            LogToConsole("§2Kilton tracker initialized");
         }
         
         public override void GetText(string text, string json)
