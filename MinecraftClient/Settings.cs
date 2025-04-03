@@ -558,6 +558,15 @@ namespace MinecraftClient
                     {
                         [TomlInlineComment("$Main.Manacube.enable_manapay$")]
                         public bool EnableManaPay = true;
+
+                        [TomlInlineComment("$Main.Manacube.manapay_target$")]
+                        public string ManaPayTarget = "JustBoyM8";
+
+                        [TomlInlineComment("$Main.Manacube.manapay_delay$")]
+                        public int ManaPayDelay = 6;
+
+                        [TomlInlineComment("$Main.Manacube.manapay_min_mana$")]
+                        public int ManaPayMinMana = 1000;
                     }
                 }
 

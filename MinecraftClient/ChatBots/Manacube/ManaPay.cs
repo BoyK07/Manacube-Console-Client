@@ -9,25 +9,15 @@ namespace MinecraftClient.ChatBots.Manacube
     public class ManaPay : ChatBot
     {
         private readonly Settings.MainConfigHelper.MainConfig.AdvancedConfig mainAdvancedConfig = Settings.Config.Main.Advanced;
+        private readonly Settings.MainConfigHelper.MainConfig.ManacubeConfig.ManaPayConfig manaPayConfig = Settings.Config.Main.Manacube.ManaPay;
         private DateTime lastStatsCheck = DateTime.MinValue;
         private int manaToSend = 0;
-        private string targetPlayer;
 
         public override void Initialize()
         {
             LogToConsole("ManaPay initialized");
-            string _targetPlayer = mainAdvancedConfig.BotOwners[0];
-            if (_targetPlayer == "player1" || _targetPlayer == "player2")
-            {
-                LogToConsole($"ManaPay: {_targetPlayer} is the owner. This is the default configuration. Please change your BotOwners in the config.");
-                return;
-            }
-            else
-            {
-                targetPlayer = _targetPlayer;
-                // Start the background task for periodic mana checks after a delay to connect to the gamemode
-                Task.Delay(10000).ContinueWith(_ => CheckManaRoutine());
-            }
+            // Start the background task for periodic mana checks after a delay to connect to the gamemode
+            Task.Delay(10000).ContinueWith(_ => CheckManaRoutine());
         }
 
         private async Task CheckManaRoutine()
@@ -35,7 +25,7 @@ namespace MinecraftClient.ChatBots.Manacube
             while (true)
             {
                 // If 6 or more hours have passed, send the /stats command
-                if ((DateTime.Now - lastStatsCheck).TotalHours >= 6)
+                if ((DateTime.Now - lastStatsCheck).TotalHours >= manaPayConfig.ManaPayDelay)
                 {
                     SendText("/stats");
                     lastStatsCheck = DateTime.Now;
@@ -43,7 +33,7 @@ namespace MinecraftClient.ChatBots.Manacube
                     await Task.Delay(2000);
                 }
                 // Wait 6 hours between checks
-                await Task.Delay(TimeSpan.FromHours(6));
+                await Task.Delay(TimeSpan.FromHours(manaPayConfig.ManaPayDelay));
             }
         }
 
@@ -60,10 +50,10 @@ namespace MinecraftClient.ChatBots.Manacube
                 string rawValue = new string(after.TakeWhile(c => char.IsDigit(c) || c == ',').ToArray());
 
                 string cleaned = rawValue.Replace(",", "");
-                if (int.TryParse(cleaned, out manaToSend) && manaToSend >= 1000)
+                if (int.TryParse(cleaned, out manaToSend) && manaToSend >= manaPayConfig.ManaPayMinMana)
                 {
-                    LogToConsole($"Detected {manaToSend} mana — sending to {targetPlayer}");
-                    SendText($"/mana pay {targetPlayer} {manaToSend}");
+                    LogToConsole($"Detected {manaToSend} mana — sending to {manaPayConfig.ManaPayTarget}");
+                    SendText($"/mana pay {manaPayConfig.ManaPayTarget} {manaToSend}");
                 }
             }
         }
