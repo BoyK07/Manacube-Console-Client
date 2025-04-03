@@ -518,6 +518,9 @@ namespace MinecraftClient
                     [TomlPrecedingComment("$Main.Manacube.MagicPond$")]
                     public MagicPondConfig MagicPond = new();
 
+                    [TomlPrecedingComment("$Main.Manacube.ManaPay$")]
+                    public ManaPayConfig ManaPay = new();
+
                     [TomlDoNotInlineObject]
                     public class KiltonConfig
                     {
@@ -548,6 +551,13 @@ namespace MinecraftClient
 
                         [TomlInlineComment("$Main.Manacube.magicpond_message_channel$")]
                         public string MagicPondMessageChannel = "";
+                    }
+
+                    [TomlDoNotInlineObject]
+                    public class ManaPayConfig
+                    {
+                        [TomlInlineComment("$Main.Manacube.enable_manapay$")]
+                        public bool EnableManaPay = true;
                     }
                 }
 
