@@ -1,18 +1,13 @@
 using System;
-using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Text.Json;
-using System.Net.Http;
 using System.Threading.Tasks;
-using MinecraftClient.Protocol;
 using MinecraftClient.Scripting;
 
 namespace MinecraftClient.ChatBots.Manacube
 {
     public class ManaPay : ChatBot
     {
-        private readonly Settings.MainConfigHelper.MainConfig.Advanced mainAdvancedConfig = Settings.Config.Main.Advanced;
+        private readonly Settings.MainConfigHelper.MainConfig.AdvancedConfig mainAdvancedConfig = Settings.Config.Main.Advanced;
         private DateTime lastStatsCheck = DateTime.MinValue;
         private int manaToSend = 0;
         private string targetPlayer;
@@ -20,36 +15,42 @@ namespace MinecraftClient.ChatBots.Manacube
         public override void Initialize()
         {
             LogToConsole("ManaPay initialized");
-            _targetPlayer = mainAdvancedConfig.BotOwners[0];
-            if (_targetPlayer == "player1" || _targetPlayer == "player2") { // player1 and player2 are placeholders for the actual player names in the default config.
+            string _targetPlayer = mainAdvancedConfig.BotOwners[0];
+            if (_targetPlayer == "player1" || _targetPlayer == "player2")
+            {
                 LogToConsole($"ManaPay: {_targetPlayer} is the owner. This is the default configuration. Please change your BotOwners in the config.");
                 return;
-            } else {
+            }
+            else
+            {
                 targetPlayer = _targetPlayer;
-                ScheduleTask(CheckManaRoutine, TimeSpan.Zero);
+                // Start the background task for periodic mana checks
+                Task.Run(CheckManaRoutine);
             }
         }
 
         private async Task CheckManaRoutine()
         {
-            // Only run every 2 hours
-            if ((DateTime.Now - lastStatsCheck).TotalHours >= 2)
+            while (true)
             {
-                SendText("/stats");
-                lastStatsCheck = DateTime.Now;
-
-                // Wait 5 seconds for the server to respond
-                await Task.Delay(5000);
+                // If 2 or more hours have passed, send the /stats command
+                if ((DateTime.Now - lastStatsCheck).TotalHours >= 2)
+                {
+                    SendText("/stats");
+                    lastStatsCheck = DateTime.Now;
+                    // Wait a bit for the server's response
+                    await Task.Delay(5000);
+                }
+                // Wait 2 hours between checks
+                await Task.Delay(TimeSpan.FromHours(2));
             }
-
-            ScheduleTask(CheckManaRoutine, TimeSpan.FromHours(2));
         }
 
-        public override bool OnTextReceived(string text, string json)
+        public override void GetText(string text, string json)
         {
             if (text.Contains("Mana:"))
             {
-                // Parse mana value from message
+                // Parse mana value from the message using regex
                 var match = Regex.Match(text, @"Mana:\s*([\d,]+)");
                 if (match.Success)
                 {
@@ -61,8 +62,6 @@ namespace MinecraftClient.ChatBots.Manacube
                     }
                 }
             }
-
-            return base.OnTextReceived(text, json);
         }
     }
 }
