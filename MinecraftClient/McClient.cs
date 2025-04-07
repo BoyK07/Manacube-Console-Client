@@ -426,11 +426,12 @@ namespace MinecraftClient
             if (Config.ChatBot.TelegramBridge.Enabled) { BotLoad(new TelegramBridge()); }
             if (Config.ChatBot.ItemsCollector.Enabled) { BotLoad(new ItemsCollector()); }
             if (Config.ChatBot.WebSocketBot.Enabled) { BotLoad(new WebSocketBot()); }
-            
+
             // Manacube Bot scripts.
             if (Config.Main.Manacube.Kilton.EnableKiltonMessage) { BotLoad(new ChatBots.Manacube.Kilton()); }
             if (Config.Main.Manacube.MagicPond.EnableMagicPondMessage) { BotLoad(new ChatBots.Manacube.MagicPond()); }
             if (Config.Main.Manacube.ManaPay.EnableManaPay) { BotLoad(new ChatBots.Manacube.ManaPay()); }
+            if (true) { BotLoad(new ChatBots.Manacube.RedstoneLampTracker()); }
         }
 
         /// <summary>

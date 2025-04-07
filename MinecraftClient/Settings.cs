@@ -622,7 +622,7 @@ namespace MinecraftClient
                     public bool ShowInventoryLayout = true;
 
                     [TomlInlineComment("$Main.Advanced.terrain_and_movements$")]
-                    public bool TerrainAndMovements = false;
+                    public bool TerrainAndMovements = true;
 
                     [TomlInlineComment("$Main.Advanced.move_head_while_walking$")]
                     public bool MoveHeadWhileWalking = true;
